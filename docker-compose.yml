@@ -15,29 +15,33 @@ services:
 
       
   backend:
-    build: ./backend
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/weatherstationdb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-docker}
+    image: sannidhiharshith/docker-backend-2400032943:latest
+    container_name: docker-springboot
     ports:
       - "8081:8081"
     depends_on:
-      postgresdb:
-        condition: service_healthy
+      - postgresdb
+    restart: on-failure
+    networks:
+      - springboot-postgres-net
 
-
-        
+    
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_BASE_URL: http://localhost:8081/api/stations
+    image: sannidhiharshith/docker-frontend-2400032943:latest
+    container_name: docker-react
     ports:
       - "8080:80"
     depends_on:
       - backend
+    restart: on-failure
+    networks:
+      - springboot-postgres-net
 
+
+      
 volumes:
   postgres_data:
+
+networks:
+  springboot-postgres-net:
